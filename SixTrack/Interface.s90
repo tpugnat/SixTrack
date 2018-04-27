@@ -470,6 +470,75 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 	                         ffTA(dataindex)%AQy(2,1,nlostp(ffj)),&
 	                         ffTA(dataindex)%AQy(2,2,nlostp(ffj)))
 
+
+                                              ! Case Delta bigger than anticipate
+             elseif (abs(dpsv(ffj))>ffTA(dataindex)%Tdpsv(nbDlt)+c1m6) then
+               ! Check the maximum delta
+               delta=-1.0d0
+               do j=1,npart
+                 if (delta<abs(dpsv(j))) then
+                   delta=abs(dpsv(j))
+                 endif
+               enddo
+               nbDlt=ceiling(abs( 2.0d0*(delta)*c1e6 ))
+               
+               ! Check the maximum delta
+               do i=1,ffNLFile
+                 if (ffImported(i) .eqv. .true.) then
+                   Deallocate(ffTA(i)%TAQx,ffTA(i)%TAQy,ffTA(i)%Tdpsv)
+                   Allocate(ffTA(i)%TAQx(1:2,1:2,1:nbDlt),ffTA(i)%TAQy(1:2,1:2,1:nbDlt),  &
+                            ffTA(i)%Tdpsv(1:nbDlt))
+          
+                   do k=1,nbDlt
+                      ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
+                      ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
+                      ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
+                      ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
+           
+                      ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
+                           
+                      call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
+                                            ffTA(i)%n,                    &
+                                            ffTA(i)%m,                    &
+                                            ffTA(i)%s,                    &
+                                            ffTA(i)%dz,                   &
+                                            ffTA(i)%lz,                   &
+                                            ffTA(i)%ij_TAz,               &
+                                            ffTA(i)%TAz,inex,             &
+                                            ffTA(i)%TAQx(1,1,k),&
+                                            ffTA(i)%TAQx(1,2,k),&
+                                            ffTA(i)%TAQx(2,1,k),&
+                                            ffTA(i)%TAQx(2,2,k),&
+                                            ffTA(i)%TAQy(1,1,k),&
+                                            ffTA(i)%TAQy(1,2,k),&
+                                            ffTA(i)%TAQy(2,1,k),&
+                                            ffTA(i)%TAQy(2,2,k))
+                   enddo
+                 endif
+               enddo
+
+               ! Find the AQ matrix for the right dpsv
+               itDlt=0
+               do k=1,nbDlt
+                 if (abs(dpsv(ffj)-ffTA(dataindex)%Tdpsv(k))<c1m6) then
+                   itDlt=k
+                 elseif ((abs(dpsv(ffj)-ffTA(dataindex)%Tdpsv(k))==c1m6).and.(itDlt==0)) then
+                   itDlt=k
+                 endif
+               enddo
+               
+               ! New AntiQuad routine
+               call ComputeAntiQuad(x,px,y,py,                 &
+                               ffTA(dataindex)%TAQx(1,1,itDlt),&
+                               ffTA(dataindex)%TAQx(1,2,itDlt),&
+                               ffTA(dataindex)%TAQx(2,1,itDlt),&
+                               ffTA(dataindex)%TAQx(2,2,itDlt),&
+                               ffTA(dataindex)%TAQy(1,1,itDlt),&
+                               ffTA(dataindex)%TAQy(1,2,itDlt),&
+                               ffTA(dataindex)%TAQy(2,1,itDlt),&
+                               ffTA(dataindex)%TAQy(2,2,itDlt))
+
+                                              ! Case Delta within anticipated domain
              else
                ! Find the AQ matrix for the right dpsv
                itDlt=0
