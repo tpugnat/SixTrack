@@ -27436,7 +27436,7 @@ C Should get me a NaN
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
           ! Print position and momentum
-!          call ffInterface(12,[1,1],i,j,n)
+          !call ffInterface(12,[1,1],i,j,n)
 !                FringeField ASIMONA, BDALENA, TPUGNAT
 +ei
 +if .not.collimat
@@ -27644,7 +27644,9 @@ C Should get me a NaN
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
             if (FFindex(ic(i)-nblo) /= 0) then
-              if (FFindex(ic(i)-nblo) /= FFindex(ic(i-2)-nblo)) then
+!              if (FFindex(ic(i)-nblo) /= FFindex(ic(i-2)-nblo)) then
+              if ((FFindex(ic(i)-nblo) /= FFindex(ic(i-2)-nblo)).and.   &
+     &            (FFindex(ic(i)-nblo) /= FFindex(ic(i-3)-nblo))) then
                 call ffInterface(2,[FFindex(ic(i)-nblo),1],i,j,n)
               endif
             endif
@@ -27656,7 +27658,9 @@ C Should get me a NaN
 !                FringeField ASIMONA, BDALENA, TPUGNAT
 
             if (FFindex(ic(i)-nblo) /= 0) then
-              if (FFindex(ic(i)-nblo) /= FFindex(ic(i+2)-nblo)) then
+!              if (FFindex(ic(i)-nblo) /= FFindex(ic(i+2)-nblo)) then
+              if ((FFindex(ic(i)-nblo) /= FFindex(ic(i+2)-nblo)).and.   &
+     &            (FFindex(ic(i)-nblo) /= FFindex(ic(i+3)-nblo))) then
                 call ffInterface(2,[FFindex(ic(i)-nblo),2],i,j,n)
               endif
             endif
