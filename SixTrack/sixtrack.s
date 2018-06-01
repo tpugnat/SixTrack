@@ -27645,8 +27645,7 @@ C Should get me a NaN
 !                FringeField ASIMONA, BDALENA, TPUGNAT
             if (FFindex(ic(i)-nblo) /= 0) then
 !              if (FFindex(ic(i)-nblo) /= FFindex(ic(i-2)-nblo)) then
-              if ((FFindex(ic(i)-nblo) /= FFindex(ic(i-2)-nblo)).and.   &
-     &            (FFindex(ic(i)-nblo) /= FFindex(ic(i-3)-nblo))) then
+              if ( (ic(i) /= ic(i-2)).and.(ic(i) /= ic(i-3)) ) then
                 call ffInterface(2,[FFindex(ic(i)-nblo),1],i,j,n)
               endif
             endif
@@ -27656,14 +27655,14 @@ C Should get me a NaN
 +ca kickvxxh
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
-
             if (FFindex(ic(i)-nblo) /= 0) then
 !              if (FFindex(ic(i)-nblo) /= FFindex(ic(i+2)-nblo)) then
-              if ((FFindex(ic(i)-nblo) /= FFindex(ic(i+2)-nblo)).and.   &
-     &            (FFindex(ic(i)-nblo) /= FFindex(ic(i+3)-nblo))) then
+              if ( (ic(i) /= ic(i+2)).and.(ic(i) /= ic(i+3)) ) then
                 call ffInterface(2,[FFindex(ic(i)-nblo),2],i,j,n)
               endif
             endif
+
+
 !                end FringeField ASIMONA, BDALENA, TPUGNAT                !hr02
 +ei
    80     continue
