@@ -27837,6 +27837,12 @@ C Should get me a NaN
 +ca mul6v02
   400     continue
   410     r0=ek(ix)
++if ffield
+!                FringeField ASIMONA, BDALENA, TPUGNAT
+          if((FFindex(max(ic(i-1)-nblo,0))==0).and.                     &
+     &(FFindex(max(ic(i+1)-nblo,0))==0))then
+!                end FringeField ASIMONA, BDALENA, TPUGNAT
++ei
           nmz=nmu(ix)
           if(nmz.ge.2) then
             do 430 j=1,napx
@@ -27852,6 +27858,11 @@ C Should get me a NaN
 +ca mul4v08
   435       continue
           endif
++if ffield
+!                FringeField ASIMONA, BDALENA, TPUGNAT
+          endif
+!                end FringeField ASIMONA, BDALENA, TPUGNAT
++ei
           goto 640
 !--SKEW ELEMENTS
 !--VERTICAL DIPOLE
