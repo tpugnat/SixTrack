@@ -757,7 +757,9 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                deallocate(ffTA(i)%ij_TAx, ffTA(i)%ij_TAy, ffTA(i)%ij_TAz )
                deallocate(ffTA(i)%TAx   , ffTA(i)%TAy   , ffTA(i)%TAz    )
                deallocate(ffTA(i)%AQx   , ffTA(i)%AQy   )!, ffTA(i)%checkAQ)
-               deallocate(ffTA(i)%TAQx  , ffTA(i)%TAQy  , ffTA(i)%Tdpsv  )
+               if ( allocated(ffTA(i)%TAQx) ) then
+                  deallocate(ffTA(i)%TAQx  , ffTA(i)%TAQy  , ffTA(i)%Tdpsv  )
+               endif
             endif
          enddo
          deallocate (ffTA)
