@@ -12237,6 +12237,7 @@ cc2008
         enddo
         if (notfound) then
           FFindex(i)=0
+          FFindex(0)=0
         endif
 ! end FringeField ASIMONA, BDALENA, TPUGNAT
 +ei
