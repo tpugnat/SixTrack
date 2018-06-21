@@ -27437,7 +27437,7 @@ C Should get me a NaN
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
           ! Print position and momentum
-          !call ffInterface(12,[1,1],i,j,n)
+!          call ffInterface(12,[1,1],i,j,n)
 !                FringeField ASIMONA, BDALENA, TPUGNAT
 +ei
 +if .not.collimat
@@ -27648,7 +27648,21 @@ C Should get me a NaN
 !              if (FFindex(ic(i)-nblo) /= FFindex(ic(i-2)-nblo)) then
               if ( (ic(i) /= ic(i-2)).and.(ic(i) /= ic(i-3)) ) then
                 call ffInterface(2,[FFindex(ic(i)-nblo),1],i,j,n)
+
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
+!      if (j==1) then
+!      write(*,*)"193 391 Q ",ic(i)-nblo," in"
+!      endif
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
               endif
+
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
+!      if (j==1) then
+!      write(*,*)"193 391 Q ",ic(i)-nblo," tc",tiltc(i)," ts",tilts(i)
+!      write(*,*)"193 391 Q ",ic(i)-nblo," xs",xsiv(1,i)," zs",zsiv(1,i)
+!      endif
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
+
             endif
 !                end FringeField ASIMONA, BDALENA, TPUGNAT
 +ei
@@ -27660,6 +27674,12 @@ C Should get me a NaN
 !              if (FFindex(ic(i)-nblo) /= FFindex(ic(i+2)-nblo)) then
               if ( (ic(i) /= ic(i+2)).and.(ic(i) /= ic(i+3)) ) then
                 call ffInterface(2,[FFindex(ic(i)-nblo),2],i,j,n)
+
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
+!      if (j==1) then
+!      write(*,*)"193 391 Q ",ic(i)-nblo," ex"
+!      endif
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
               endif
             endif
 
@@ -27861,6 +27881,28 @@ C Should get me a NaN
           endif
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
+
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
+!          else
+!      write(*,*)"193 391 M ",ic(i)-nblo," -> ",ic(i-1)-nblo
+!      write(*,*)"193 391 M ",ic(i)-nblo," tc",tiltc(i)," ts",tilts(i)
+!      write(*,*)"193 391 M ",ic(i)-nblo," xs",xsiv(1,i)," zs",zsiv(1,i)
+!        write(*,*) "193 391  1 -> a=",aaiv(1,1,i),"    b=",bbiv(1,1,i)
+!        write(*,*) "193 391  2 -> a=",aaiv(2,1,i),"    b=",bbiv(2,1,i)
+!        write(*,*) "193 391  3 -> a=",aaiv(3,1,i),"    b=",bbiv(3,1,i)
+!        write(*,*) "193 391  4 -> a=",aaiv(4,1,i),"    b=",bbiv(4,1,i)
+!        write(*,*) "193 391  5 -> a=",aaiv(5,1,i),"    b=",bbiv(5,1,i)
+!        write(*,*) "193 391  6 -> a=",aaiv(6,1,i),"    b=",bbiv(6,1,i)
+!        write(*,*) "193 391  7 -> a=",aaiv(7,1,i),"    b=",bbiv(7,1,i)
+!        write(*,*) "193 391  8 -> a=",aaiv(8,1,i),"    b=",bbiv(8,1,i)
+!        write(*,*) "193 391  9 -> a=",aaiv(9,1,i),"    b=",bbiv(9,1,i)
+!        write(*,*) "193 391 10 -> a=",aaiv(10,1,i),"    b=",bbiv(10,1,i)
+!        write(*,*) "193 391 11 -> a=",aaiv(11,1,i),"    b=",bbiv(11,1,i)
+!        write(*,*) "193 391 12 -> a=",aaiv(12,1,i),"    b=",bbiv(12,1,i)
+!        write(*,*) "193 391 13 -> a=",aaiv(13,1,i),"    b=",bbiv(13,1,i)
+!        write(*,*) "193 391 14 -> a=",aaiv(14,1,i),"    b=",bbiv(14,1,i)
+! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
+
           endif
 !                end FringeField ASIMONA, BDALENA, TPUGNAT
 +ei

@@ -212,6 +212,11 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
          write (*, *) 'FringeField ERROR: The data in',  TRIM(ADJUSTL(ffFNames(dataindex))) ,'is not imported'
 
       else
+         ! Check fine not empty
+         if (ffTA(dataindex)%s<3) then
+            return
+         endif
+         
          ! Change to Symp referenciale
          x = ((xv(1,ffj)-xsiv(1,ffi))*tiltc(ffi) + (xv(2,ffj)-zsiv(1,ffi))*tilts(ffi))*c1m3! mm -> m
          y = ((xv(2,ffj)-zsiv(1,ffi))*tiltc(ffi) - (xv(1,ffj)-xsiv(1,ffi))*tilts(ffi))*c1m3! mm -> m
@@ -252,6 +257,14 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 
            if (currQuad(2)==1) inex = "IN"
            if (currQuad(2)==2) inex = "OUT"
+
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr1 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
+!         oidpsv(1)
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+
 
   	   !   - Repositionnement initial
   	   if ((inex=="IN").or.(inex=="OUT_O")) then
@@ -335,31 +348,59 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                    Allocate(ffTA(i)%TAQx(1:2,1:2,1:nbDlt),ffTA(i)%TAQy(1:2,1:2,1:nbDlt),  &
                             ffTA(i)%Tdpsv(1:nbDlt))
           
-                   do k=1,nbDlt
-                      ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
-                      ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
-                      ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
-                      ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
+                   
+                   if (nbDlt > 1) then
+                     do k=1,nbDlt
+                       ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
+                       ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
+                       ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
+                       ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
            
-                      ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
+                       ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
                            
-                      call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
-                                            ffTA(i)%n,                    &
-                                            ffTA(i)%m,                    &
-                                            ffTA(i)%s,                    &
-                                            ffTA(i)%dz,                   &
-                                            ffTA(i)%lz,                   &
-                                            ffTA(i)%ij_TAz,               &
-                                            ffTA(i)%TAz,inex,             &
-                                            ffTA(i)%TAQx(1,1,k),&
-                                            ffTA(i)%TAQx(1,2,k),&
-                                            ffTA(i)%TAQx(2,1,k),&
-                                            ffTA(i)%TAQx(2,2,k),&
-                                            ffTA(i)%TAQy(1,1,k),&
-                                            ffTA(i)%TAQy(1,2,k),&
-                                            ffTA(i)%TAQy(2,1,k),&
-                                            ffTA(i)%TAQy(2,2,k))
-                   enddo
+                       call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
+                                             ffTA(i)%n,                    &
+                                             ffTA(i)%m,                    &
+                                             ffTA(i)%s,                    &
+                                             ffTA(i)%dz,                   &
+                                             ffTA(i)%lz,                   &
+                                             ffTA(i)%ij_TAz,               &
+                                             ffTA(i)%TAz,inex,             &
+                                             ffTA(i)%TAQx(1,1,k),&
+                                             ffTA(i)%TAQx(1,2,k),&
+                                             ffTA(i)%TAQx(2,1,k),&
+                                             ffTA(i)%TAQx(2,2,k),&
+                                             ffTA(i)%TAQy(1,1,k),&
+                                             ffTA(i)%TAQy(1,2,k),&
+                                             ffTA(i)%TAQy(2,1,k),&
+                                             ffTA(i)%TAQy(2,2,k))
+                     enddo
+                   else
+                     k=1
+                     ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
+                     ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
+                     ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
+                     ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
+           
+                     ffTA(i)%Tdpsv(k)=delta
+                         
+                     call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
+                                           ffTA(i)%n,                    &
+                                           ffTA(i)%m,                    &
+                                           ffTA(i)%s,                    &
+                                           ffTA(i)%dz,                   &
+                                           ffTA(i)%lz,                   &
+                                           ffTA(i)%ij_TAz,               &
+                                           ffTA(i)%TAz,inex,             &
+                                           ffTA(i)%TAQx(1,1,k),&
+                                           ffTA(i)%TAQx(1,2,k),&
+                                           ffTA(i)%TAQx(2,1,k),&
+                                           ffTA(i)%TAQx(2,2,k),&
+                                           ffTA(i)%TAQy(1,1,k),&
+                                           ffTA(i)%TAQy(1,2,k),&
+                                           ffTA(i)%TAQy(2,1,k),&
+                                           ffTA(i)%TAQy(2,2,k))
+                   endif
                  endif
                enddo
 
@@ -410,6 +451,13 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
              endif
    	   endif
 
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr2 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
+!         oidpsv(1)
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+
 
  	   !   - Compute Fringe Field using asymplectic Map (Lie2)
            call SympIntegrator(x,px,y,py,zb,oidpsv(ffj), &
@@ -427,6 +475,14 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                              ffTA(dataindex)%ij_TAz,  &
                              ffTA(dataindex)%TAz,     &
                              inex)
+
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr3 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
+!         oidpsv(1)
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+
 
 !           sigma_s=sigma_s + ffTA(dataindex)%Lgth + zb*betabeta0
 
@@ -470,6 +526,12 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 	                         ffTA(dataindex)%AQy(2,1,nlostp(ffj)),&
 	                         ffTA(dataindex)%AQy(2,2,nlostp(ffj)))
 
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr4       1"
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+
 
                                               ! Case Delta bigger than anticipate
              elseif (abs(dpsv(ffj))>ffTA(dataindex)%Tdpsv(nbDlt)+c1m6) then
@@ -488,32 +550,59 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                    Deallocate(ffTA(i)%TAQx,ffTA(i)%TAQy,ffTA(i)%Tdpsv)
                    Allocate(ffTA(i)%TAQx(1:2,1:2,1:nbDlt),ffTA(i)%TAQy(1:2,1:2,1:nbDlt),  &
                             ffTA(i)%Tdpsv(1:nbDlt))
-          
-                   do k=1,nbDlt
-                      ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
-                      ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
-                      ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
-                      ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
+                   
+                   if (nbDlt > 1) then
+                     do k=1,nbDlt
+                       ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
+                       ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
+                       ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
+                       ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
            
-                      ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
+                       ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
                            
-                      call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
-                                            ffTA(i)%n,                    &
-                                            ffTA(i)%m,                    &
-                                            ffTA(i)%s,                    &
-                                            ffTA(i)%dz,                   &
-                                            ffTA(i)%lz,                   &
-                                            ffTA(i)%ij_TAz,               &
-                                            ffTA(i)%TAz,inex,             &
-                                            ffTA(i)%TAQx(1,1,k),&
-                                            ffTA(i)%TAQx(1,2,k),&
-                                            ffTA(i)%TAQx(2,1,k),&
-                                            ffTA(i)%TAQx(2,2,k),&
-                                            ffTA(i)%TAQy(1,1,k),&
-                                            ffTA(i)%TAQy(1,2,k),&
-                                            ffTA(i)%TAQy(2,1,k),&
-                                            ffTA(i)%TAQy(2,2,k))
-                   enddo
+                       call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
+                                             ffTA(i)%n,                    &
+                                             ffTA(i)%m,                    &
+                                             ffTA(i)%s,                    &
+                                             ffTA(i)%dz,                   &
+                                             ffTA(i)%lz,                   &
+                                             ffTA(i)%ij_TAz,               &
+                                             ffTA(i)%TAz,inex,             &
+                                             ffTA(i)%TAQx(1,1,k),&
+                                             ffTA(i)%TAQx(1,2,k),&
+                                             ffTA(i)%TAQx(2,1,k),&
+                                             ffTA(i)%TAQx(2,2,k),&
+                                             ffTA(i)%TAQy(1,1,k),&
+                                             ffTA(i)%TAQy(1,2,k),&
+                                             ffTA(i)%TAQy(2,1,k),&
+                                             ffTA(i)%TAQy(2,2,k))
+                     enddo
+                   else
+                     k=1
+                     ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
+                     ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
+                     ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
+                     ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
+           
+                     ffTA(i)%Tdpsv(k)=delta
+                         
+                     call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
+                                           ffTA(i)%n,                    &
+                                           ffTA(i)%m,                    &
+                                           ffTA(i)%s,                    &
+                                           ffTA(i)%dz,                   &
+                                           ffTA(i)%lz,                   &
+                                           ffTA(i)%ij_TAz,               &
+                                           ffTA(i)%TAz,inex,             &
+                                           ffTA(i)%TAQx(1,1,k),&
+                                           ffTA(i)%TAQx(1,2,k),&
+                                           ffTA(i)%TAQx(2,1,k),&
+                                           ffTA(i)%TAQx(2,2,k),&
+                                           ffTA(i)%TAQy(1,1,k),&
+                                           ffTA(i)%TAQy(1,2,k),&
+                                           ffTA(i)%TAQy(2,1,k),&
+                                           ffTA(i)%TAQy(2,2,k))
+                   endif
                  endif
                enddo
 
@@ -537,6 +626,12 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                                ffTA(dataindex)%TAQy(1,2,itDlt),&
                                ffTA(dataindex)%TAQy(2,1,itDlt),&
                                ffTA(dataindex)%TAQy(2,2,itDlt))
+
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr4       2"
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
 
                                               ! Case Delta within anticipated domain
              else
@@ -561,9 +656,20 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                                ffTA(dataindex)%TAQy(1,2,itDlt),&
                                ffTA(dataindex)%TAQy(2,1,itDlt),&
                                ffTA(dataindex)%TAQy(2,2,itDlt))
+
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr4       3   x",    ffTA(dataindex)%TAQx(1,1,itDlt),&
+!                ffTA(dataindex)%TAQx(1,2,itDlt),ffTA(dataindex)%TAQx(2,1,itDlt),&
+!                ffTA(dataindex)%TAQx(2,2,itDlt),"  y",ffTA(dataindex)%TAQy(1,1,itDlt),&
+!                ffTA(dataindex)%TAQy(1,2,itDlt),ffTA(dataindex)%TAQy(2,1,itDlt),&
+!                ffTA(dataindex)%TAQy(2,2,itDlt)
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
              endif
              x=x+(ffTA(dataindex)%Lgth-ffParam(dataindex,2))*oidpsv(ffj)*px;
              y=y+(ffTA(dataindex)%Lgth-ffParam(dataindex,2))*oidpsv(ffj)*py;
+
 
 !             x=x+Ldpsv1*px;
 !             y=y+Ldpsv1*py;
@@ -576,12 +682,24 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
              x=x-(ffTA(dataindex)%Lgth-ffParam(dataindex,2))*oidpsv(ffj)*px;
              y=y-(ffTA(dataindex)%Lgth-ffParam(dataindex,2))*oidpsv(ffj)*py;
 
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr4       4"
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+
 !             x=x-Ldpsv1*px;
 !             y=y-Ldpsv1*py;
 !             sigma_s=sigma_s-ffParam(dataindex,2)*(1.0d0-betabeta0*(1.0d0-(px*px+py*py)*Ldpsv2));
              
    	   endif
 
+! <<<<<<<<<<<<<<<<<<<<<< Debug
+!     if (ffj==1) then
+!     write(*,*) "193 391 tsttr4 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
+!         oidpsv(1)
+!     endif
+! <<<<<<<<<<<<<<<<<<<<<< Debug
 
 
 !           sigmv(ffj)=sigmv(ffj)+sigma_s*c1e3;
@@ -624,13 +742,19 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
    else if (workChoise == 12) then
      if (ffi == 1) then !(.false.) then !
        do j = 1,napx
-         if (.true..or.(nlostp(j) == 1).or.(nlostp(j) == 9).or.(nlostp(j) == 10).or.            &
-             (nlostp(j) == 15).or.(nlostp(j) == 16)) then
+!         if (.true.) then
+!         if ((nlostp(j) == 1).or.(nlostp(j) == 9).or.(nlostp(j) == 10).or.            &
+!             (nlostp(j) == 15).or.(nlostp(j) == 16)) then
            write(*,*) "12 21 ", ffi, ffn, j, nlostp(j), xv(1,j), yv(1,j), xv(2,j),&
                        yv(2,j), dpsv(j), dpd(j), oidpsv(j)
-         endif
+!         endif
        enddo
      endif
+
+! <<<<<<<<<<<<<<<<<< Debug
+!     write(*,*) "193 391 tsttrn ", ffi, ffn, 1, nlostp(1), xv(1,1), yv(1,1), xv(2,1),&
+!                       yv(2,1), dpsv(1), dpd(1), oidpsv(1)
+! <<<<<<<<<<<<<<<<<< Debug
 
    ! 3 : Allocation table for particles out of boundary
    ! -------------------------------------------------------------------------
@@ -673,19 +797,52 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
      enddo
      nbDlt=ceiling(abs( 2.0d0*(delta)*c1e6 ))
 
+! <<<<<<<<<<<<<<<<<< Debug
+!     write(*,*) "193 391 tsttrn DDD ", delta,nbDlt,(2.0d0*(1-1)/(nbDlt-1)- 1.0d0)*delta
+! <<<<<<<<<<<<<<<<<< Debug
+
+
      ! Check the maximum delta
      do i=1,ffNLFile
        if (ffImported(i) .eqv. .true.) then
           Allocate(ffTA(i)%TAQx(1:2,1:2,1:nbDlt),ffTA(i)%TAQy(1:2,1:2,1:nbDlt),ffTA(i)%Tdpsv(1:nbDlt))
           
-          do k=1,nbDlt
+          
+          if (nbDlt > 1) then
+            do k=1,nbDlt
+              ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
+              ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
+              ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
+              ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
+           
+              ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
+                           
+              call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
+                                    ffTA(i)%n,                    &
+                                    ffTA(i)%m,                    &
+                                    ffTA(i)%s,                    &
+                                    ffTA(i)%dz,                   &
+                                    ffTA(i)%lz,                   &
+                                    ffTA(i)%ij_TAz,               &
+                                    ffTA(i)%TAz,inex,             &
+                                    ffTA(i)%TAQx(1,1,k),&
+                                    ffTA(i)%TAQx(1,2,k),&
+                                    ffTA(i)%TAQx(2,1,k),&
+                                    ffTA(i)%TAQx(2,2,k),&
+                                    ffTA(i)%TAQy(1,1,k),&
+                                    ffTA(i)%TAQy(1,2,k),&
+                                    ffTA(i)%TAQy(2,1,k),&
+                                    ffTA(i)%TAQy(2,2,k))
+             enddo
+          else
+            k=1
             ffTA(i)%TAQx(1,1,k)=0;              ffTA(i)%TAQx(1,2,k)=0;
             ffTA(i)%TAQx(2,1,k)=0;              ffTA(i)%TAQx(2,2,k)=0;
             ffTA(i)%TAQy(1,1,k)=0;              ffTA(i)%TAQy(1,2,k)=0;
             ffTA(i)%TAQy(2,1,k)=0;              ffTA(i)%TAQy(2,2,k)=0;
-            
-            ffTA(i)%Tdpsv(k)=(2.0d0*(k-1)/(nbDlt-1)- 1.0d0)*delta
-            
+           
+            ffTA(i)%Tdpsv(k)=delta
+                     
             call GenerateAntiQuad(1.0d0/(1.0d0+ffTA(i)%Tdpsv(k)), &
                                   ffTA(i)%n,                    &
                                   ffTA(i)%m,                    &
@@ -702,7 +859,7 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                                   ffTA(i)%TAQy(1,2,k),&
                                   ffTA(i)%TAQy(2,1,k),&
                                   ffTA(i)%TAQy(2,2,k))
-         enddo
+         endif
        endif
      enddo
    
@@ -718,27 +875,27 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 
       if (.not.firstTime2) then
 
-!         if (.not.firstTime) then
-!            do i = 1,npart
-!               if (pstop(i)) then
-!                  write(*,*) "     * Part ",i,":    LOST!!!"
-!               else
-!                  write(*,*) "     * Part ",i,":"
-!               endif
-!
-!               do k = 1,ffNLn
-!                  sum_loss_in=0
-!                  sum_loss_out=0
-!                  do j = 1,numl
-!                     sum_loss_in =sum_loss_in +ffloss(i,j,k,1)
-!                     sum_loss_out=sum_loss_out+ffloss(i,j,k,2)
-!                  enddo
-!            
-!                  write(*,*) "           -> ",TRIM(ffQNames(k)),": Number of period out of boundary: (in) ",&
-!                         &sum_loss_in," (out) ",sum_loss_out
-!               enddo
-!            enddo
-!         endif
+         if (.not.firstTime) then
+            do i = 1,npart
+               if (pstop(i)) then
+                  write(*,*) "     * Part ",i,":    LOST!!!"
+               else
+                  write(*,*) "     * Part ",i,":"
+               endif
+
+               do k = 1,ffNLn
+                  sum_loss_in=0
+                  sum_loss_out=0
+                  do j = 1,numl
+                     sum_loss_in =sum_loss_in +ffloss(i,j,k,1)
+                     sum_loss_out=sum_loss_out+ffloss(i,j,k,2)
+                  enddo
+            
+                  write(*,*) "           -> ",TRIM(ffQNames(k)),": Number of period out of boundary: (in) ",&
+                         &sum_loss_in," (out) ",sum_loss_out
+               enddo
+            enddo
+         endif
 
          deallocate(ffloss,ffnotIN)
          firstTime2 = .true.
