@@ -339,7 +339,7 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                    delta=abs(dpsv(j))
                  endif
                enddo
-               nbDlt=ceiling(abs( 2.0d0*(delta)*c1e6 ))
+               nbDlt=max(1,ceiling(abs( 2.0d0*(delta)*c1e6 )))
                
                ! Check the maximum delta
                do i=1,ffNLFile
@@ -542,7 +542,7 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                    delta=abs(dpsv(j))
                  endif
                enddo
-               nbDlt=ceiling(abs( 2.0d0*(delta)*c1e6 ))
+               nbDlt=max(1,ceiling(abs( 2.0d0*(delta)*c1e6 )))
                
                ! Check the maximum delta
                do i=1,ffNLFile
@@ -761,6 +761,10 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
    else if ((workChoise == 3)) then
       if (firstTime2) then
          ALLOCATE(ffloss(1:npart,1:numl,1:ffNLn,1:2),ffnotIN(1:npart,1:ffNLn))
+
+! <<<<<<<<<<<<<<<<<< Debug
+!     write(*,*) "193 391 ffloss ", npart,numl,ffNLn
+! <<<<<<<<<<<<<<<<<< Debug
          do i=1,npart
             do j=1,numl
                do k=1,ffNLn
@@ -795,7 +799,7 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
          delta=abs(dpsv(j))
        endif
      enddo
-     nbDlt=ceiling(abs( 2.0d0*(delta)*c1e6 ))
+     nbDlt=max(1,ceiling(abs( 2.0d0*(delta)*c1e6 )))
 
 ! <<<<<<<<<<<<<<<<<< Debug
 !     write(*,*) "193 391 tsttrn DDD ", delta,nbDlt,(2.0d0*(1-1)/(nbDlt-1)- 1.0d0)*delta
@@ -876,24 +880,28 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
       if (.not.firstTime2) then
 
          if (.not.firstTime) then
+
+! <<<<<<<<<<<<<<<<<< Debug
+!     write(*,*) "193 391 ffloss ", npart,numl,ffNLn
+! <<<<<<<<<<<<<<<<<< Debug
             do i = 1,npart
                if (pstop(i)) then
                   write(*,*) "     * Part ",i,":    LOST!!!"
                else
                   write(*,*) "     * Part ",i,":"
                endif
-
-               do k = 1,ffNLn
-                  sum_loss_in=0
-                  sum_loss_out=0
-                  do j = 1,numl
-                     sum_loss_in =sum_loss_in +ffloss(i,j,k,1)
-                     sum_loss_out=sum_loss_out+ffloss(i,j,k,2)
-                  enddo
-            
-                  write(*,*) "           -> ",TRIM(ffQNames(k)),": Number of period out of boundary: (in) ",&
-                         &sum_loss_in," (out) ",sum_loss_out
-               enddo
+!               
+!               do k = 1,ffNLn
+!                  sum_loss_in=0
+!                  sum_loss_out=0
+!                  do j = 1,numl
+!                     sum_loss_in =sum_loss_in +ffloss(i,j,k,1)
+!                     sum_loss_out=sum_loss_out+ffloss(i,j,k,2)
+!                  enddo
+!           
+!                  write(*,*) "           -> ",TRIM(ffQNames(k)),": Number of period out of boundary: (in) ",&
+!                         &sum_loss_in," (out) ",sum_loss_out
+!               enddo
             enddo
          endif
 
