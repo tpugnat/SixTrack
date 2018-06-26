@@ -1942,12 +1942,24 @@
 
       if(nomax.eq.1) then
          minv = min(inva,invb,invc)
-         ccipoa = cc(ipoa)
+        if( abs(cc(ipoa)).le.eps .or. abs(cc(ipob)).le.eps) then
+	 ccipoa = 0d0
+         ccipob = 0d0
+         cc(ipoc) = 0d0
+        else
+	 ccipoa = cc(ipoa)
          ccipob = cc(ipob)
          cc(ipoc) = ccipoa*ccipob
+        endif	
          do 20 i=1,minv
-  20     cc(ipoc+i) = ccipoa*cc(ipob+i) + ccipob*cc(ipoa+i)
-         do 30 i=ipoc+minv+1,ipoc+invc
+ ! 20     cc(ipoc+i) = ccipoa*cc(ipob+i) + ccipob*cc(ipoa+i)
+           if( abs(cc(ipoa+i)).le.eps .or. abs(cc(ipob+i)).le.eps) then 
+	     cc(ipoc+i) = 0d0
+            else
+	     cc(ipoc+i) = ccipoa*cc(ipob+i) + ccipob*cc(ipoa+i)
+	  endif
+  20	 continue
+        do 30 i=ipoc+minv+1,ipoc+invc
   30     cc(i) = 0d0
          return
       endif
@@ -2445,7 +2457,13 @@
       if(nomax.eq.1) then
          minv = min(inva,invb)
          do 20 i=0,minv
-  20     cc(ipob+i) = cc(ipoa+i) * ckon
+	!  20     cc(ipob+i) = cc(ipoa+i) * ckon
+          if( abs(cc(ipoa+i)) .le. eps) then
+	     cc(ipob+i) = 0d0
+            else
+	     cc(ipob+i) = cc(ipoa+i) * ckon
+	  endif
+  20	 continue
          do 30 i=ipob+minv+1,ipob+invb
   30     cc(i) = 0d0
 +if debug
