@@ -27650,9 +27650,9 @@ C Should get me a NaN
                 call ffInterface(2,[FFindex(ic(i)-nblo),1],i,j,n)
 
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
-!      if (j==1) then
-!      write(*,*)"193 391 Q ",ic(i)-nblo," in"
-!      endif
+      if (j==1) then
+      write(*,*)"193 391 Q ",ic(i)-nblo," in"
+      endif
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
               endif
 
@@ -27860,8 +27860,9 @@ C Should get me a NaN
   410     r0=ek(ix)
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
-          if((FFindex(max(ic(i-1)-nblo,0))==0).and.                     &
-     &(FFindex(max(ic(i+1)-nblo,0))==0))then
+!          if((FFindex(max(ic(i-1)-nblo,0))==0).and.                     &
+!     &(FFindex(max(ic(i+1)-nblo,0))==0))then
+          if((FFindex(max(ic(i)-nblo,0))==0))then
 !                end FringeField ASIMONA, BDALENA, TPUGNAT
 +ei
           nmz=nmu(ix)
