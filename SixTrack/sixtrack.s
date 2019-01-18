@@ -27437,7 +27437,7 @@ C Should get me a NaN
 +if ffield
 !                FringeField ASIMONA, BDALENA, TPUGNAT
           ! Print position and momentum
-!          call ffInterface(12,[1,1],i,j,n)
+          call ffInterface(12,[1,1],i,j,n)
 !                FringeField ASIMONA, BDALENA, TPUGNAT
 +ei
 +if .not.collimat
@@ -27657,10 +27657,10 @@ C Should get me a NaN
               endif
 
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
-!      if (j==1) then
-!      write(*,*)"193 391 Q ",ic(i)-nblo," tc",tiltc(i)," ts",tilts(i)
+      if (j==1) then
+      write(*,*)"193 391 Q ",ic(i)-nblo," tc",tiltc(i)," ts",tilts(i)
 !      write(*,*)"193 391 Q ",ic(i)-nblo," xs",xsiv(1,i)," zs",zsiv(1,i)
-!      endif
+      endif
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
 
             endif
@@ -27676,9 +27676,9 @@ C Should get me a NaN
                 call ffInterface(2,[FFindex(ic(i)-nblo),2],i,j,n)
 
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
-!      if (j==1) then
-!      write(*,*)"193 391 Q ",ic(i)-nblo," ex"
-!      endif
+      if (j==1) then
+      write(*,*)"193 391 Q ",ic(i)-nblo," ex"
+      endif
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
               endif
             endif
@@ -27884,8 +27884,8 @@ C Should get me a NaN
 !                FringeField ASIMONA, BDALENA, TPUGNAT
 
 ! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Debug TPUGNAT
-!          else
-!      write(*,*)"193 391 M ",ic(i)-nblo," -> ",ic(i-1)-nblo
+          else
+      write(*,*)"193 391 M ",ic(i)-nblo," -> ",ic(i-1)-nblo
 !      write(*,*)"193 391 M ",ic(i)-nblo," tc",tiltc(i)," ts",tilts(i)
 !      write(*,*)"193 391 M ",ic(i)-nblo," xs",xsiv(1,i)," zs",zsiv(1,i)
 !        write(*,*) "193 391  1 -> a=",aaiv(1,1,i),"    b=",bbiv(1,1,i)

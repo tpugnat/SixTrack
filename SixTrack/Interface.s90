@@ -90,7 +90,9 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 
    ! Variables that will be eliminated
    ! -------------------------------------------------------------------------
-   double precision :: x, px, y, py, zb, delta, gam0, betabeta0, sigma_s
+   double precision :: x, px, y, py
+   double precision :: x_tp, px_tp, y_tp, py_tp
+   double precision :: zb, delta, gam0, betabeta0, sigma_s
    double precision :: Ldpsv1,Ldpsv2, LoutQ
    double precision :: stracki
    character(len=512) :: inex
@@ -216,12 +218,43 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
          if (ffTA(dataindex)%s<3) then
             return
          endif
+
+         if (currQuad(2)==1) inex = "IN"
+         if (currQuad(2)==2) inex = "OUT"
          
          ! Change to Symp referenciale
-         x = ((xv(1,ffj)-xsiv(1,ffi))*tiltc(ffi) + (xv(2,ffj)-zsiv(1,ffi))*tilts(ffi))*c1m3! mm -> m
-         y = ((xv(2,ffj)-zsiv(1,ffi))*tiltc(ffi) - (xv(1,ffj)-xsiv(1,ffi))*tilts(ffi))*c1m3! mm -> m
-         px= ((yv(1,ffj)            )*tiltc(ffi) + (yv(2,ffj)            )*tilts(ffi))*c1m3*(1.0d0+dpsv(ffj))
-         py= ((yv(2,ffj)            )*tiltc(ffi) - (yv(1,ffj)            )*tilts(ffi))*c1m3*(1.0d0+dpsv(ffj))
+         x_tp = xv(1,ffj)
+         y_tp = xv(2,ffj)
+         px_tp= yv(1,ffj)
+         py_tp= yv(2,ffj)
+
+         ! Return to beginning of the HE Quad
+!         if ((inex=="IN").or.(inex=="OUT_O")) then
+!           x_tp = x_tp - strack(ffi+2)*0.5d0*px_tp
+!           y_tp = y_tp - strack(ffi+2)*0.5d0*py_tp
+!         else
+!           x_tp = x_tp + strack(ffi-1)*0.5d0*px_tp
+!           y_tp = y_tp + strack(ffi-1)*0.5d0*py_tp
+!         endif
+
+         if ((inex=="IN").or.(inex=="OUT_O")) then   ! Beginning Riccardo head
+           x_tp = x_tp - strack(ffi-1)*px_tp
+           y_tp = y_tp - strack(ffi-1)*py_tp
+         else
+           x_tp = x_tp + strack(ffi+2)*px_tp
+           y_tp = y_tp + strack(ffi+2)*py_tp
+         endif
+
+         ! Rotation error for the quad
+         x = ((x_tp-xsiv(1,ffi))*tiltc(ffi) + (y_tp-zsiv(1,ffi))*tilts(ffi))*c1m3! mm -> m
+         y = ((y_tp-zsiv(1,ffi))*tiltc(ffi) - (x_tp-xsiv(1,ffi))*tilts(ffi))*c1m3! mm -> m
+         px= ((px_tp           )*tiltc(ffi) + (py_tp           )*tilts(ffi))*c1m3*(1.0d0+dpsv(ffj))
+         py= ((py_tp           )*tiltc(ffi) - (px_tp           )*tilts(ffi))*c1m3*(1.0d0+dpsv(ffj))
+
+!         x = ((xv(1,ffj)-xsiv(1,ffi))*tiltc(ffi) + (xv(2,ffj)-zsiv(1,ffi))*tilts(ffi))*c1m3              ! mm -> m
+!         y = ((xv(2,ffj)-zsiv(1,ffi))*tiltc(ffi) - (xv(1,ffj)-xsiv(1,ffi))*tilts(ffi))*c1m3              ! mm -> m
+!         px= ((yv(1,ffj)            )*tiltc(ffi) + (yv(2,ffj)            )*tilts(ffi))*c1m3*(1.0d0+dpsv(ffj))
+!         py= ((yv(2,ffj)            )*tiltc(ffi) - (yv(1,ffj)            )*tilts(ffi))*c1m3*(1.0d0+dpsv(ffj))
          
          
          ! Selection of the particle that are only in the radius (r = 0.08m)
@@ -254,16 +287,6 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
            LoutQ    = (ffTA(dataindex)%Lgth-ffParam(dataindex,2))
            Ldpsv1   = LoutQ*oidpsv(ffj);
            Ldpsv2   = oidpsv(ffj)*oidpsv(ffj);
-
-           if (currQuad(2)==1) inex = "IN"
-           if (currQuad(2)==2) inex = "OUT"
-
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-!     if (ffj==1) then
-!     write(*,*) "193 391 tsttr1 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
-!         oidpsv(1)
-!     endif
-! <<<<<<<<<<<<<<<<<<<<<< Debug
 
 
   	   !   - Repositionnement initial
@@ -451,13 +474,6 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
              endif
    	   endif
 
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-!     if (ffj==1) then
-!     write(*,*) "193 391 tsttr2 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
-!         oidpsv(1)
-!     endif
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-
 
  	   !   - Compute Fringe Field using asymplectic Map (Lie2)
            call SympIntegrator(x,px,y,py,zb,oidpsv(ffj), &
@@ -475,13 +491,6 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                              ffTA(dataindex)%ij_TAz,  &
                              ffTA(dataindex)%TAz,     &
                              inex)
-
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-!     if (ffj==1) then
-!     write(*,*) "193 391 tsttr3 ", ffi, ffn, 1, nlostp(1), x, px, y,py, dpsv(1), dpd(1),&
-!         oidpsv(1)
-!     endif
-! <<<<<<<<<<<<<<<<<<<<<< Debug
 
 
 !           sigma_s=sigma_s + ffTA(dataindex)%Lgth + zb*betabeta0
@@ -525,12 +534,6 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 	                         ffTA(dataindex)%AQy(1,2,nlostp(ffj)),&
 	                         ffTA(dataindex)%AQy(2,1,nlostp(ffj)),&
 	                         ffTA(dataindex)%AQy(2,2,nlostp(ffj)))
-
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-!     if (ffj==1) then
-!     write(*,*) "193 391 tsttr4       1"
-!     endif
-! <<<<<<<<<<<<<<<<<<<<<< Debug
 
 
                                               ! Case Delta bigger than anticipate
@@ -627,11 +630,6 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                                ffTA(dataindex)%TAQy(2,1,itDlt),&
                                ffTA(dataindex)%TAQy(2,2,itDlt))
 
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-!     if (ffj==1) then
-!     write(*,*) "193 391 tsttr4       2"
-!     endif
-! <<<<<<<<<<<<<<<<<<<<<< Debug
 
                                               ! Case Delta within anticipated domain
              else
@@ -657,15 +655,6 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
                                ffTA(dataindex)%TAQy(2,1,itDlt),&
                                ffTA(dataindex)%TAQy(2,2,itDlt))
 
-! <<<<<<<<<<<<<<<<<<<<<< Debug
-!     if (ffj==1) then
-!     write(*,*) "193 391 tsttr4       3   x",    ffTA(dataindex)%TAQx(1,1,itDlt),&
-!                ffTA(dataindex)%TAQx(1,2,itDlt),ffTA(dataindex)%TAQx(2,1,itDlt),&
-!                ffTA(dataindex)%TAQx(2,2,itDlt),"  y",ffTA(dataindex)%TAQy(1,1,itDlt),&
-!                ffTA(dataindex)%TAQy(1,2,itDlt),ffTA(dataindex)%TAQy(2,1,itDlt),&
-!                ffTA(dataindex)%TAQy(2,2,itDlt)
-!     endif
-! <<<<<<<<<<<<<<<<<<<<<< Debug
              endif
              x=x+(ffTA(dataindex)%Lgth-ffParam(dataindex,2))*oidpsv(ffj)*px;
              y=y+(ffTA(dataindex)%Lgth-ffParam(dataindex,2))*oidpsv(ffj)*py;
@@ -707,10 +696,37 @@ subroutine ffInterface (workChoise, currQuad, ffi, ffj, ffn)
 
 
            ! Change to SixTrack referenciale
-           yv(1,ffj) = (tiltc(ffi)*px - tilts(ffi)*py)*c1e3*oidpsv(ffj)
-           yv(2,ffj) = (tilts(ffi)*px + tiltc(ffi)*py)*c1e3*oidpsv(ffj)
-           xv(1,ffj) = (tiltc(ffi)*x  - tilts(ffi)*y )*c1e3 + xsiv(1,ffi)   ! m -> mm
-           xv(2,ffj) = (tilts(ffi)*x  + tiltc(ffi)*y )*c1e3 + zsiv(1,ffi)   ! m -> mm
+           px_tp= (tiltc(ffi)*px - tilts(ffi)*py)*c1e3*oidpsv(ffj)
+           py_tp= (tilts(ffi)*px + tiltc(ffi)*py)*c1e3*oidpsv(ffj)
+           x_tp = (tiltc(ffi)*x  - tilts(ffi)*y )*c1e3 + xsiv(1,ffi)   ! m -> mm
+           y_tp = (tilts(ffi)*x  + tiltc(ffi)*y )*c1e3 + zsiv(1,ffi)   ! m -> mm
+
+           ! Return to last kick of the  Quad
+!           if ((inex=="IN").or.(inex=="OUT_O")) then   ! Beginning HE
+!             x_tp = x_tp + strack(ffi+2)*0.5d0*px_tp
+!             y_tp = y_tp + strack(ffi+2)*0.5d0*py_tp
+!           else
+!             x_tp = x_tp - strack(ffi-1)*0.5d0*px_tp
+!             y_tp = y_tp - strack(ffi-1)*0.5d0*py_tp
+!           endif
+
+           if ((inex=="IN").or.(inex=="OUT_O")) then   ! Beginning Riccardo head
+             x_tp = x_tp + strack(ffi-1)*px_tp
+             y_tp = y_tp + strack(ffi-1)*py_tp
+           else
+             x_tp = x_tp - strack(ffi+2)*px_tp
+             y_tp = y_tp - strack(ffi+2)*py_tp
+           endif
+
+           yv(1,ffj) = px_tp
+           yv(2,ffj) = py_tp
+           xv(1,ffj) = x_tp
+           xv(2,ffj) = y_tp
+
+!           yv(1,ffj) = (tiltc(ffi)*px - tilts(ffi)*py)*c1e3*oidpsv(ffj)
+!           yv(2,ffj) = (tilts(ffi)*px + tiltc(ffi)*py)*c1e3*oidpsv(ffj)
+!           xv(1,ffj) = (tiltc(ffi)*x  - tilts(ffi)*y )*c1e3 + xsiv(1,ffi)   ! m -> mm
+!           xv(2,ffj) = (tilts(ffi)*x  + tiltc(ffi)*y )*c1e3 + zsiv(1,ffi)   ! m -> mm
 	endif
       endif
 

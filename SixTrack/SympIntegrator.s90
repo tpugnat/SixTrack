@@ -270,11 +270,18 @@ subroutine GenerateAntiQuad(deltap1,n,m,s,dz,lz,ij_Az,TAz,inex,a1,b1,c1,d1,a2,b2
 !     ctp= (C0x*dz*(1.0d0+deltap1*C0x*dz*dz*sixth))*a1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*c1
 !     dtp= (C0x*dz*(1.0d0+deltap1*C0x*dz*dz*sixth))*b1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*d1
      
-     ! Thin
-     atp= (1.0d0+deltap1*C0x*dz*dz*0.5d0)*a1 + ((1.0d0+deltap1*C0x*dz*dz*0.25d0)*deltap1*dz)*c1
-     btp= (1.0d0+deltap1*C0x*dz*dz*0.5d0)*b1 + ((1.0d0+deltap1*C0x*dz*dz*0.25d0)*deltap1*dz)*d1
-     ctp= (C0x*dz)*a1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*c1
-     dtp= (C0x*dz)*b1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*d1
+     ! Thin DKD
+!     atp= (1.0d0+deltap1*C0x*dz*dz*0.5d0)*a1 + ((1.0d0+deltap1*C0x*dz*dz*0.25d0)*deltap1*dz)*c1
+!     btp= (1.0d0+deltap1*C0x*dz*dz*0.5d0)*b1 + ((1.0d0+deltap1*C0x*dz*dz*0.25d0)*deltap1*dz)*d1
+!     ctp= (C0x*dz)*a1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*c1
+!     dtp= (C0x*dz)*b1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*d1
+!     a1=atp; b1=btp; c1=ctp; d1=dtp;
+     
+     ! Thin KDK
+     atp= (1.0d0+deltap1*C0x*dz*dz*0.5d0)*a1 + (deltap1*dz)*c1
+     btp= (1.0d0+deltap1*C0x*dz*dz*0.5d0)*b1 + (deltap1*dz)*d1
+     ctp= (1.0d0+deltap1*C0x*dz*dz*0.25d0)*(C0x*dz)*a1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*c1
+     dtp= (1.0d0+deltap1*C0x*dz*dz*0.25d0)*(C0x*dz)*b1 + (1.0d0+deltap1*C0x*dz*dz*0.5d0)*d1
      a1=atp; b1=btp; c1=ctp; d1=dtp;
      
      
@@ -284,11 +291,18 @@ subroutine GenerateAntiQuad(deltap1,n,m,s,dz,lz,ij_Az,TAz,inex,a1,b1,c1,d1,a2,b2
 !     ctp= (C0y*dz*(1.0d0+deltap1*C0y*dz*dz*sixth))*a2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*c2
 !     dtp= (C0y*dz*(1.0d0+deltap1*C0y*dz*dz*sixth))*b2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*d2
 
-     ! Thin
-     atp= (1.0d0+deltap1*C0y*dz*dz*0.5d0)*a2 + ((1.0d0+deltap1*C0y*dz*dz*0.25d0)*deltap1*dz)*c2
-     btp= (1.0d0+deltap1*C0y*dz*dz*0.5d0)*b2 + ((1.0d0+deltap1*C0y*dz*dz*0.25d0)*deltap1*dz)*d2
-     ctp= (C0y*dz)*a2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*c2
-     dtp= (C0y*dz)*b2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*d2
+     ! Thin DKD
+!     atp= (1.0d0+deltap1*C0y*dz*dz*0.5d0)*a2 + ((1.0d0+deltap1*C0y*dz*dz*0.25d0)*deltap1*dz)*c2
+!     btp= (1.0d0+deltap1*C0y*dz*dz*0.5d0)*b2 + ((1.0d0+deltap1*C0y*dz*dz*0.25d0)*deltap1*dz)*d2
+!     ctp= (C0y*dz)*a2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*c2
+!     dtp= (C0y*dz)*b2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*d2
+!     a2=atp; b2=btp; c2=ctp; d2=dtp;
+     
+     ! Thin KDK
+     atp= (1.0d0+deltap1*C0y*dz*dz*0.5d0)*a2 + (deltap1*dz)*c2
+     btp= (1.0d0+deltap1*C0y*dz*dz*0.5d0)*b2 + (deltap1*dz)*d2
+     ctp= (1.0d0+deltap1*C0y*dz*dz*0.25d0)*(C0y*dz)*a2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*c2
+     dtp= (1.0d0+deltap1*C0y*dz*dz*0.25d0)*(C0y*dz)*b2 + (1.0d0+deltap1*C0y*dz*dz*0.5d0)*d2
      a2=atp; b2=btp; c2=ctp; d2=dtp;
    enddo
    
